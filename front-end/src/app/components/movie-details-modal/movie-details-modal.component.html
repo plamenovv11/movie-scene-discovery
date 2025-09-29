@@ -21,7 +21,7 @@
             <span class="release-date">{{ formatReleaseDate(movie?.releaseDate) }}</span>
             <span class="rating">
               <mat-icon>star</mat-icon>
-              {{ movie?.voteAverage?.toFixed(1) || 'N/A' }}
+              {{ getFormattedRating(movie?.voteAverage) }}
             </span>
             <div class="genres">
               <mat-chip *ngFor="let genre of movie?.genres" class="genre-chip">
@@ -61,8 +61,8 @@
       <!-- Fighting Scenes Section -->
       <div class="scenes-section">
         <h3>Fighting Scenes ({{ movie?.scenes?.length || 0 }})</h3>
-        <div *ngIf="movie?.scenes && movie?.scenes.length > 0; else noScenes" class="scenes-list">
-          <div *ngFor="let scene of movie?.scenes" class="scene-item">
+        <div *ngIf="movie && movie?.scenes && movie.scenes.length > 0; else noScenes" class="scenes-list">
+          <div *ngFor="let scene of movie.scenes" class="scene-item">
             <div class="scene-content">
               <h4 class="scene-description">{{ scene.description }}</h4>
               <div class="scene-meta">

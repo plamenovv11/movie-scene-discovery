@@ -14,9 +14,9 @@
   </div>
 
   <!-- Results Grid -->
-  <div *ngIf="!isLoading && movies.length > 0" class="results-grid">
+  <div *ngIf="!isLoading && filteredMovies.length > 0" class="results-grid">
     <div class="results-header">
-      <h2>Found {{ movies.length }} movies with fighting scenes</h2>
+      <h2>Found {{ filteredMovies.length }} movies with fighting scenes</h2>
       <p>Click on a movie to see detailed scenes and trailers</p>
     </div>
 
@@ -43,7 +43,7 @@
           <div class="movie-stats">
             <div class="rating">
               <mat-icon class="star-icon">star</mat-icon>
-              <span>{{ movie.voteAverage.toFixed(1) || 'N/A' }}</span>
+              <span>{{ getFormattedRating(movie.voteAverage) }}</span>
             </div>
             <div class="scenes-count">
               <mat-icon class="scene-icon">movie</mat-icon>

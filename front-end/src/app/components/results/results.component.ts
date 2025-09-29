@@ -34,12 +34,12 @@ export class ResultsComponent implements OnInit, OnChanges {
   constructor() { }
 
   ngOnInit(): void {
-    this.filteredMovies = this.movies;
+    this.filteredMovies = this.filterMoviesWithImages(this.movies);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['movies']) {
-      this.filteredMovies = this.movies;
+      this.filteredMovies = this.filterMoviesWithImages(this.movies);
       this.selectedMovie = null;
     }
   }
@@ -65,6 +65,26 @@ export class ResultsComponent implements OnInit, OnChanges {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
+    });
+  }
+
+  getFormattedRating(voteAverage: number | string | undefined): string {
+    if (!voteAverage) return 'N/A';
+    
+    const rating = typeof voteAverage === 'number' ? voteAverage : parseFloat(voteAverage);
+    
+    if (isNaN(rating)) return 'N/A';
+    
+    return rating.toFixed(1);
+  }
+
+  private filterMoviesWithImages(movies: Movie[]): Movie[] {
+    return movies.filter(movie => {
+      // Filter out movies that don't have both posterPath and backdropPath
+      const hasPoster = movie.posterPath && movie.posterPath.trim() !== '';
+      const hasBackdrop = movie.backdropPath && movie.backdropPath.trim() !== '';
+      
+      return hasPoster && hasBackdrop;
     });
   }
 }

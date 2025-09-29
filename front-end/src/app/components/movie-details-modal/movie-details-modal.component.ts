@@ -104,4 +104,14 @@ export class MovieDetailsModalComponent {
   getCurrentTime(): string {
     return new Date().toLocaleTimeString();
   }
+
+  getFormattedRating(voteAverage: number | string | undefined): string {
+    if (!voteAverage) return 'N/A';
+    
+    const rating = typeof voteAverage === 'number' ? voteAverage : parseFloat(voteAverage);
+    
+    if (isNaN(rating)) return 'N/A';
+    
+    return rating.toFixed(1);
+  }
 }
