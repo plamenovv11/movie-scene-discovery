@@ -1,0 +1,71 @@
+<div class="results-container">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="60"></mat-spinner>
+    <h3>Searching for movies...</h3>
+    <p>This may take a moment as we analyze scenes with AI</p>
+  </div>
+
+  <!-- No Results -->
+  <div *ngIf="!isLoading && movies.length === 0" class="no-results">
+    <mat-icon class="no-results-icon">movie_filter</mat-icon>
+    <h3>No movies found</h3>
+    <p>Try different keywords or check your search terms</p>
+  </div>
+
+  <!-- Results Grid -->
+  <div *ngIf="!isLoading && movies.length > 0" class="results-grid">
+    <div class="results-header">
+      <h2>Found {{ movies.length }} movies with fighting scenes</h2>
+      <p>Click on a movie to see detailed scenes and trailers</p>
+    </div>
+
+    <div class="movies-grid">
+      <mat-card 
+        *ngFor="let movie of filteredMovies" 
+        class="movie-card"
+        (click)="onMovieSelect(movie)">
+        
+        <div class="movie-poster">
+          <img 
+            [src]="getPosterUrl(movie.posterPath)" 
+            [alt]="movie.title"
+            class="poster-image">
+          <div class="movie-overlay">
+            <mat-icon class="play-icon">play_arrow</mat-icon>
+          </div>
+        </div>
+
+        <mat-card-content class="movie-content">
+          <h3 class="movie-title">{{ movie.title }}</h3>
+          <p class="movie-release">{{ formatReleaseDate(movie.releaseDate) }}</p>
+          
+          <div class="movie-stats">
+            <div class="rating">
+              <mat-icon class="star-icon">star</mat-icon>
+              <span>{{ movie.voteAverage.toFixed(1) || 'N/A' }}</span>
+            </div>
+            <div class="scenes-count">
+              <mat-icon class="scene-icon">movie</mat-icon>
+              <span>{{ movie.scenes.length || 0 }} scenes</span>
+            </div>
+          </div>
+
+          <div class="movie-genres">
+            <mat-chip *ngFor="let genre of movie.genres.slice(0, 3)" class="genre-chip">
+              {{ genre }}
+            </mat-chip>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Movie Details Modal -->
+  <app-movie-details-modal 
+    *ngIf="selectedMovie !== null"
+    [movie]="selectedMovie"
+    [isVisible]="selectedMovie !== null"
+    (close)="onCloseDetails()">
+  </app-movie-details-modal>
+</div>

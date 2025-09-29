@@ -1,0 +1,58 @@
+<div class="search-container">
+  <div class="search-card">
+    <div class="search-header">
+      <mat-icon class="search-icon">search</mat-icon>
+      <h2 class="search-title">Find Fighting Scenes</h2>
+      <p class="search-description">
+        Enter keywords to discover movies with exciting fighting scenes. 
+        Use terms like "karate", "martial arts", "combat", "action", etc.
+      </p>
+    </div>
+
+    <form [formGroup]="searchForm" (ngSubmit)="onSubmit()" class="search-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Enter keywords (comma-separated)</mat-label>
+        <input 
+          matInput 
+          formControlName="keywords"
+          placeholder="e.g., karate, martial arts, combat, action"
+          (input)="onKeywordInput($event)"
+          [class.error]="searchForm.get('keywords')?.invalid && searchForm.get('keywords')?.touched">
+        <mat-icon matSuffix>movie_filter</mat-icon>
+        <mat-error *ngIf="searchForm.get('keywords')?.invalid && searchForm.get('keywords')?.touched">
+          {{ getErrorMessage() }}
+        </mat-error>
+      </mat-form-field>
+
+      <div class="search-actions">
+        <button 
+          mat-raised-button 
+          color="primary" 
+          type="submit"
+          [disabled]="searchForm.invalid || isLoading"
+          class="search-button">
+          <mat-icon *ngIf="!isLoading">search</mat-icon>
+          <mat-spinner *ngIf="isLoading" diameter="20"></mat-spinner>
+          <span>{{ isLoading ? 'Searching...' : 'Search Movies' }}</span>
+        </button>
+      </div>
+
+      <div *ngIf="errorMessage" class="error-message">
+        <mat-icon>error</mat-icon>
+        <span>{{ errorMessage }}</span>
+      </div>
+    </form>
+
+    <div class="search-examples">
+      <h3>Example searches:</h3>
+      <div class="example-tags">
+        <mat-chip-listbox>
+          <mat-chip (click)="setExampleSearch('karate, martial arts')">Karate & Martial Arts</mat-chip>
+          <mat-chip (click)="setExampleSearch('combat, war, action')">Combat & War</mat-chip>
+          <mat-chip (click)="setExampleSearch('boxing, fighting, rings')">Boxing & Fighting</mat-chip>
+          <mat-chip (click)="setExampleSearch('ninja, samurai, swords')">Ninja & Samurai</mat-chip>
+        </mat-chip-listbox>
+      </div>
+    </div>
+  </div>
+</div>

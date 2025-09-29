@@ -1,0 +1,95 @@
+<!-- Movie Details Modal -->
+<div class="movie-details-overlay" (click)="onClose()">
+  <div class="movie-details-modal" (click)="$event.stopPropagation()">
+    <button class="close-button" (click)="onClose()">
+      <mat-icon>close</mat-icon>
+    </button>
+
+    <div class="movie-details-content">
+      <!-- Movie Header -->
+      <div class="movie-details-header" [style.background-image]="'url(' + getBackdropUrl(movie?.backdropPath) + ')'">
+        <div class="movie-details-overlay-bg"></div>
+        <!-- Play Button Overlay -->
+        <div class="play-button-overlay" (click)="playTrailer()">
+          <mat-icon class="play-icon">play_arrow</mat-icon>
+          <span class="play-text">{{ movie?.youtubeTrailerId ? 'Play Trailer' : 'No Trailer Available' }}</span>
+        </div>
+        <div class="movie-details-info">
+          <h1 class="movie-details-title">{{ movie?.title }}</h1>
+          <p class="movie-details-overview">{{ movie?.overview }}</p>
+          <div class="movie-details-meta">
+            <span class="release-date">{{ formatReleaseDate(movie?.releaseDate) }}</span>
+            <span class="rating">
+              <mat-icon>star</mat-icon>
+              {{ movie?.voteAverage?.toFixed(1) || 'N/A' }}
+            </span>
+            <div class="genres">
+              <mat-chip *ngFor="let genre of movie?.genres" class="genre-chip">
+                {{ genre }}
+              </mat-chip>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trailer Section -->
+      <div class="trailer-section" [style.display]="movie?.youtubeTrailerId ? 'block' : 'none'">
+        <h3>Movie Trailer</h3>
+        <div class="trailer-container">
+          <iframe
+            [src]="getYouTubeEmbedUrl(movie?.youtubeTrailerId)"
+            frameborder="0"
+            allowfullscreen
+            class="trailer-iframe">
+          </iframe>
+        </div>
+      </div>
+
+      <!-- Debug Info -->
+      <div class="debug-info" style="background: #f0f0f0; padding: 1rem; margin: 1rem; border-radius: 8px;">
+        <h4>Debug Info:</h4>
+        <p><strong>Test Value:</strong> {{ testValue }}</p>
+        <p><strong>Current Time:</strong> {{ getCurrentTime() }}</p>
+        <p><strong>Selected Movie Title:</strong> {{ movie?.title || 'No Title' }}</p>
+        <p><strong>Selected Movie Object:</strong> {{ movie | json }}</p>
+        <p><strong>YouTube Trailer ID:</strong> {{ movie?.youtubeTrailerId || 'None' }}</p>
+        <p><strong>YouTube Trailer URL:</strong> {{ movie?.youtubeTrailerUrl || 'None' }}</p>
+        <p><strong>Embed URL:</strong> {{ movie?.youtubeTrailerId ? getYouTubeEmbedUrl(movie?.youtubeTrailerId) : 'N/A' }}</p>
+        <p><strong>Show Details:</strong> {{ isVisible }}</p>
+      </div>
+
+      <!-- Fighting Scenes Section -->
+      <div class="scenes-section">
+        <h3>Fighting Scenes ({{ movie?.scenes?.length || 0 }})</h3>
+        <div *ngIf="movie?.scenes && movie?.scenes.length > 0; else noScenes" class="scenes-list">
+          <div *ngFor="let scene of movie?.scenes" class="scene-item">
+            <div class="scene-content">
+              <h4 class="scene-description">{{ scene.description }}</h4>
+              <div class="scene-meta">
+                <div class="scene-keywords">
+                  <mat-chip *ngFor="let keyword of scene.keywords" class="keyword-chip">
+                    {{ keyword }}
+                  </mat-chip>
+                </div>
+                <div class="scene-confidence">
+                  <span class="confidence-label">Confidence:</span>
+                  <span 
+                    class="confidence-value"
+                    [style.color]="getConfidenceColor(scene.confidence)">
+                    {{ getConfidenceText(scene.confidence) }} ({{ (scene.confidence * 100).toFixed(0) }}%)
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <ng-template #noScenes>
+          <div class="no-scenes">
+            <mat-icon>movie_filter</mat-icon>
+            <p>No specific fighting scenes identified for this movie.</p>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>
