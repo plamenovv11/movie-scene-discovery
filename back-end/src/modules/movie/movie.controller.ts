@@ -28,14 +28,16 @@ export class MovieController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all movies' })
+  @ApiOperation({ summary: 'Get all movies or search movies by title' })
   @ApiResponse({
     status: 200,
-    description: 'List of all movies',
+    description: 'List of movies',
     type: [MovieResponseDto],
   })
-  async findAllMovies(): Promise<MovieResponseDto[]> {
-    const movies = await this.movieService.findAllMovies();
+  async findAllMovies(@Query('title') title?: string): Promise<MovieResponseDto[]> {
+    const movies = title 
+      ? await this.movieService.searchMoviesByTitle(title)
+      : await this.movieService.findAllMovies();
     return movies.map(movie => this.mapToResponseDto(movie));
   }
 

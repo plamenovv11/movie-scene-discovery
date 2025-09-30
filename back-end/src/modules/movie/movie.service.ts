@@ -24,16 +24,12 @@ export class MovieService {
 
   async searchMoviesByKeywords(keywords: string[]): Promise<Movie[]> {
     try {
-      console.log(`Searching for movies with keywords: ${keywords.join(', ')}`);
-      
       // Use AI to enhance keywords and get movie suggestions
       let aiAnalysis;
       try {
         aiAnalysis = await this.aiService.analyzeSceneKeywords(keywords);
         console.log('AI analysis completed successfully');
       } catch (error) {
-        console.error('AI analysis failed, using fallback keywords:', error);
-        // Fallback to original keywords if AI fails
         aiAnalysis = {
           enhancedKeywords: keywords,
           movieSuggestions: [],
@@ -46,8 +42,6 @@ export class MovieService {
 
       const foundMovies: Movie[] = [];
 
-      // Search by movie titles suggested by AI
-      console.log(`Searching for ${movieTitles.length} AI-suggested movies...`);
       for (const title of movieTitles) {
         try {
           const movie = await this.searchMovieByTitle(title);
@@ -61,24 +55,18 @@ export class MovieService {
       }
 
       // Search TMDB by keywords
-      console.log(`Searching TMDB with ${allKeywords.length} keywords...`);
       const tmdbMovies = await this.searchTmdbByKeywords(allKeywords);
       for (const tmdbMovie of tmdbMovies) {
         const existingMovie = foundMovies.find(m => m.tmdbId === tmdbMovie.id);
         if (!existingMovie) {
           try {
-            const movie = await this.createMovieFromTmdb(tmdbMovie);
+            const movie = await this.saveFoundTMDBMovies(tmdbMovie);
             foundMovies.push(movie);
-            console.log(`Found TMDB movie: ${movie.title}`);
           } catch (error) {
             console.error(`Error creating movie from TMDB data:`, error);
           }
         }
       }
-
-      console.log(`Found ${foundMovies.length} total movies`);
-
-      // Return all found movies without AI scene analysis
       return foundMovies;
     } catch (error) {
       console.error('Error searching movies by keywords:', error);
@@ -98,7 +86,7 @@ export class MovieService {
 
       const movies = response.data.results;
       if (movies && movies.length > 0) {
-        return this.createMovieFromTmdb(movies[0]);
+        return this.saveFoundTMDBMovies(movies[0]);
       }
       return null;
     } catch (error) {
@@ -137,7 +125,7 @@ export class MovieService {
     }
   }
 
-  private async createMovieFromTmdb(tmdbMovie: any): Promise<Movie> {
+  private async saveFoundTMDBMovies(tmdbMovie: any): Promise<Movie> {
     // Check if movie already exists
     let movie = await this.movieRepository.findOne({
       where: { tmdbId: tmdbMovie.id },
@@ -232,5 +220,13 @@ export class MovieService {
     return this.movieRepository.find({
       order: { createdAt: 'DESC' },
     });
+  }
+
+  async searchMoviesByTitle(title: string): Promise<Movie[]> {
+    return this.movieRepository
+      .createQueryBuilder('movie')
+      .where('LOWER(movie.title) LIKE LOWER(:title)', { title: `%${title}%` })
+      .orderBy('movie.createdAt', 'DESC')
+      .getMany();
   }
 }

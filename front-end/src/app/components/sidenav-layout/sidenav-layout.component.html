@@ -1,0 +1,89 @@
+<div class="sidenav-layout">
+  <!-- Left Sidenav -->
+  <div class="sidenav">
+    <div class="sidenav-header">
+      <h3>Movie Discovery</h3>
+    </div>
+    
+    <div class="sidenav-content">
+      <!-- Previously Searched Movies Tab -->
+      <div class="tab-section">
+        <button 
+          class="tab-button" 
+          [class.active]="activeTab === 'previously-searched'"
+          (click)="setActiveTab('previously-searched')">
+          <mat-icon>history</mat-icon>
+          <span>Previously Searched</span>
+        </button>
+        
+        <button 
+          class="tab-button" 
+          [class.active]="activeTab === 'search'"
+          (click)="setActiveTab('search')">
+          <mat-icon>search</mat-icon>
+          <span>New Search</span>
+        </button>
+      </div>
+      
+      <!-- Previously Searched Movies Content -->
+      <div *ngIf="activeTab === 'previously-searched'" class="tab-content">
+        <div class="search-controls">
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Filter by title</mat-label>
+            <input 
+              matInput 
+              [(ngModel)]="titleFilter"
+              placeholder="e.g., karate"
+              (input)="onFilterChange()">
+            <mat-icon matSuffix>filter_list</mat-icon>
+          </mat-form-field>
+          
+          <button 
+            mat-raised-button 
+            color="primary" 
+            (click)="loadPreviouslySearchedMovies()"
+            [disabled]="isLoading">
+            <mat-icon *ngIf="!isLoading">refresh</mat-icon>
+            <mat-spinner *ngIf="isLoading" diameter="20"></mat-spinner>
+            <span>{{ isLoading ? 'Loading...' : 'Load Movies' }}</span>
+          </button>
+        </div>
+        
+        <!-- Movies List -->
+        <div class="movies-list" *ngIf="previouslySearchedMovies.length > 0">
+          <div 
+            *ngFor="let movie of previouslySearchedMovies" 
+            class="movie-item"
+            (click)="selectMovie(movie)">
+            <img 
+              [src]="getPosterUrl(movie.posterPath)" 
+              [alt]="movie.title"
+              class="movie-poster">
+            <div class="movie-info">
+              <h4 class="movie-title">{{ movie.title }}</h4>
+              <p class="movie-year">{{ formatReleaseDate(movie.releaseDate) }}</p>
+              <div class="movie-rating">
+                <mat-icon>star</mat-icon>
+                <span>{{ getFormattedRating(movie.voteAverage) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- No Movies State -->
+        <div *ngIf="previouslySearchedMovies.length === 0 && !isLoading" class="no-movies">
+          <mat-icon>movie_filter</mat-icon>
+          <p>No previously searched movies found</p>
+          <button mat-button (click)="loadPreviouslySearchedMovies()">
+            Load Movies
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Main Content Area -->
+  <div class="main-content">
+    <ng-content></ng-content>
+  </div>
+</div>

@@ -1,27 +1,37 @@
-<div class="app-container">
-  <header class="app-header">
-    <div class="header-content">
-      <h1 class="app-title">
-        <mat-icon class="title-icon">movie</mat-icon>
-        Movie Scene Discovery
-      </h1>
-      <p class="app-subtitle">Find fighting scenes in movies using AI-powered search</p>
-    </div>
-  </header>
+<app-sidenav-layout (movieSelected)="onMovieSelected($event)">
+  <div class="app-container">
+    <header class="app-header">
+      <div class="header-content">
+        <h1 class="app-title">
+          <mat-icon class="title-icon">movie</mat-icon>
+          Movie Scene Discovery
+        </h1>
+        <p class="app-subtitle">Find fighting scenes in movies using AI-powered search</p>
+      </div>
+    </header>
 
-  <main class="app-main">
-    <app-search 
-      (searchResults)="onSearchResults($event)"
-      (searchLoading)="onSearchLoading($event)">
-    </app-search>
-    
-    <app-results 
-      [movies]="movies"
-      [isLoading]="isLoading">
-    </app-results>
-  </main>
+    <main class="app-main">
+      <app-search 
+        (searchResults)="onSearchResults($event)"
+        (searchLoading)="onSearchLoading($event)">
+      </app-search>
+      
+      <app-results 
+        [movies]="movies"
+        [isLoading]="isLoading">
+      </app-results>
+    </main>
 
-  <footer class="app-footer">
-    <p>&copy; 2024 Movie Scene Discovery. Powered by AI and TMDB.</p>
-  </footer>
-</div>
+    <footer class="app-footer">
+      <p>&copy; 2024 Movie Scene Discovery. Powered by AI and TMDB.</p>
+    </footer>
+  </div>
+</app-sidenav-layout>
+
+
+  <app-movie-details-modal 
+    *ngIf="selectedMovie !== null"
+    [movie]="selectedMovie"
+    [isVisible]="selectedMovie !== null"
+    (close)="onCloseMovieModal()">
+  </app-movie-details-modal>
