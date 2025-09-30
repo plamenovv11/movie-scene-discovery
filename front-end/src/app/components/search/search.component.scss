@@ -21,19 +21,26 @@
 .search-header {
   margin-bottom: 2rem;
 
+  .title-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
   .search-icon {
     font-size: 3rem;
     width: 3rem;
     height: 3rem;
     color: #667eea;
-    margin-bottom: 1rem;
   }
 
   .search-title {
     font-size: 2rem;
     font-weight: 600;
     color: #333;
-    margin: 0 0 1rem 0;
+    margin: 0;
   }
 
   .search-description {
@@ -53,7 +60,9 @@
   }
 
   .search-actions {
-    margin-top: 1rem;
+    margin-top: 0.5rem;
+    display: flex;
+    justify-content: center;
 
     .search-button {
       padding: 12px 32px;
