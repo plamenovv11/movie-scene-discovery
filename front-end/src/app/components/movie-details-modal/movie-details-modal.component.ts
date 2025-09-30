@@ -26,6 +26,7 @@ export class MovieDetailsModalComponent {
   @Output() close = new EventEmitter<void>();
 
   testValue = 'Template binding test';
+  showTrailer = false;
 
   constructor(private cdr: ChangeDetectorRef) { }
 
@@ -35,26 +36,34 @@ export class MovieDetailsModalComponent {
 
   playTrailer(): void {
     console.log('playTrailer called, movie:', this.movie);
-    if (this.movie?.youtubeTrailerId) {
-      console.log('Trailer ID found:', this.movie.youtubeTrailerId);
-      // Force change detection first
-      this.cdr.detectChanges();
+    const youtubeTrailerId = this.movie?.youtubeTrailerId;
+    if (youtubeTrailerId) {
+      // Show the trailer section first
+      this.showTrailer = true;
+
       
-      // Wait a bit for DOM to update, then scroll to the trailer section
-      setTimeout(() => {
+      // Wait a bit for DOM to update, then scroll + play
+
         const trailerSection = document.querySelector('.trailer-section');
         if (trailerSection) {
           console.log('Scrolling to trailer section');
           trailerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+          // Find the iframe
+          const iframe = document.querySelector('.trailer-iframe') as HTMLIFrameElement;
+          if (iframe) {
+            // Always use embed URL with autoplay & mute
+            const autoplayUrl = `https://www.youtube.com/embed/${youtubeTrailerId}?autoplay=1&mute=1`;
+
+            iframe.src = autoplayUrl;
+            console.log('Updated iframe src with autoplay:', autoplayUrl);
+          } else {
+            console.warn('Trailer iframe not found');
+          }
         } else {
-          console.log('Trailer section not found after timeout');
-          // Try to find it again
-          const trailerSection2 = document.querySelector('.trailer-section');
-          console.log('Second attempt - trailer section found:', !!trailerSection2);
+          console.warn('Trailer section not found');
         }
-      }, 100);
     } else {
-      console.log('No trailer ID available - showing alert');
       alert('No trailer available for this movie');
     }
   }
@@ -107,11 +116,11 @@ export class MovieDetailsModalComponent {
 
   getFormattedRating(voteAverage: number | string | undefined): string {
     if (!voteAverage) return 'N/A';
-    
+
     const rating = typeof voteAverage === 'number' ? voteAverage : parseFloat(voteAverage);
-    
+
     if (isNaN(rating)) return 'N/A';
-    
+
     return rating.toFixed(1);
   }
 }
